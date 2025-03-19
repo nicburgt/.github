@@ -1,0 +1,35 @@
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.x"
+      version:
+        required: true
+        type: string
+      poetry-build-artifact-name:
+        required: false
+        type: string
+        default: "poetry-build-dist"
+
+jobs:
+  poetry_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Build release distributions
+        run: |
+          pipx install poetry
+          poetry version ${{ inputs.version }}
+          poetry build
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.poetry-build-artifact-name }}
+          path: dist/
+      
