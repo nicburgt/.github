@@ -49,12 +49,12 @@ jobs:
           if [ "${{ steps.detect_linter.outputs.formatter }}" == "ruff" ]; then
             python -m ruff format --diff > format-logs/ruff-lint.log
           fi
-      - task: PublishBuildArtifacts@1
-        inputs:
-          pathtoPublish: 'format-logs'
-          artifactName: 'formatter log'
-        continueOnError: true
-        condition: Failed()
+      - name: Upload formatter logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: formatter-log
+          path: format-logs
       - name: Detect linting framework
         id: detect_linter
         run: |
@@ -89,12 +89,12 @@ jobs:
           if [ "${{ steps.detect_linter.outputs.linter }}" == "ruff" ]; then
             python -m ruff check . --no-cache $(Build.SourcesDirectory)/src/ > linter-logs/ruff-lint.log
           fi
-      - task: PublishBuildArtifacts@1
-        inputs:
-          pathtoPublish: 'linter-logs'
-          artifactName: 'linter log'
-        continueOnError: true
-        condition: Failed()
+      - name: Upload formatter logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linter-log
+          path: linter-logs
       - name: Detect type checker
         id: detect_type_checker
         run: |
