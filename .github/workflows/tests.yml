@@ -8,6 +8,10 @@ on:
       test-results-artifact-name:
         required: true
         type: string
+      use-codecov:
+        required: false
+        type: boolean
+        default: false
     secrets:
       codecov_token:
         required: false
@@ -64,7 +68,7 @@ jobs:
           name: ${{ inputs.test-results-artifact-name }}
           path: coverage.xml
       - name: Upload coverage reports to Codecov (optionally)
-        if: ${{ secrets.codecov_token != '' }}
+        if: ${{ inputs.use-codecov }}
         run: |
           # Replace `linux` below with the appropriate OS
           # Options are `alpine`, `linux`, `macos`, `windows`
