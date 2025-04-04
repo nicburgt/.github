@@ -46,7 +46,7 @@ jobs:
       - name: Run Tests (poetry)
         if: steps.install_dependencies.outputs.install_method == 'poetry'
         run: |
-          if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
+          if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pytest" ]; then
             poetry run python -m pytest --cov . --cov-report xml
           else
             echo "Skipping running tests through poetry as test framework was not specified"
@@ -54,7 +54,7 @@ jobs:
       - name: Run Tests (pip)
         if: steps.install_dependencies.outputs.install_method == 'pip'
         run: |
-          if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
+          if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pytest" ]; then
             python -m pytest --cov . --cov-report xml
           else
             echo "Skipping running tests through pip as test framework was not specified"
