@@ -1,0 +1,24 @@
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.x"
+      test-results-artifact-name:
+        required: false
+        type: string
+        default: "test-results"
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: linting
+        id: linting
+        run: |
+          echo "todo"

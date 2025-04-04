@@ -1,0 +1,56 @@
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.x"
+      test-results-artifact-name:
+        required: true
+        type: string
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Detect test framework (pytest or another)
+        id: detect_test_framework
+        run: |
+          if [ "${{ steps.package_manager_detection.outputs.install_method }}" == "poetry" ]; then
+            # Check for pytest in poetry dependencies
+            if poetry show | grep -q 'pytest'; then
+              echo "pytest found as test framework"
+              echo "{test_framework}={pytest}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No pytest found, skipping running of tests"
+            fi
+          elif [ "${{ steps.package_manager_detection.outputs.install_method }}" == "pip" ]; then
+            # Check for pytest in requirements.txt
+            if grep -q 'pytest' requirements.txt; then
+              echo "pytest found as test framework"
+              echo "{test_framework}={pytest}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No pytest found, skipping running of tests"
+            fi
+          fi
+      - name: Run tests
+        if: steps.detect_test_framework.outputs.test_framework != ''
+        run: |
+          if [ "${{ steps.package_manager_detection.outputs.install_method }}" == "poetry" ]; then
+            if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pytest" ]; then
+                poetry run pytest
+            else
+                echo "Skipping running tests through poetry as test framework was not specified"
+            fi
+            poetry run pytest  # Or any test command you want with Poetry
+          elif [ "${{ steps.package_manager_detection.outputs.install_method }}" == "pip" ]; then
+            if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
+                pytest
+            else
+                echo "Skipping running tests through pip as test framework was not specified"
+            fi
+          fi
