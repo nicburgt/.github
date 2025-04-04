@@ -64,7 +64,7 @@ jobs:
           name: ${{ inputs.test-results-artifact-name }}
           path: coverage.xml
       - name: Upload coverage reports to Codecov (optionally)
-        if: $ {{ secrets.codecov_token != '' }}
+        if: ${{ secrets.codecov_token != '' }}
         run: |
           # Replace `linux` below with the appropriate OS
           # Options are `alpine`, `linux`, `macos`, `windows`
