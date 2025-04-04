@@ -1,0 +1,15 @@
+{
+    "name": "Python CI workflow template",
+    "description": "Python CI workflow template",
+    "iconName": "example-icon",
+    "categories": [
+        "Python", "CI"
+    ],
+    "filePatterns": [
+        "requirements\\.txt$",
+        "pyproject\\.toml$",
+        "poetry\\.lock$",
+        ".*\\.py$",
+        ".*\\.md$"
+    ]
+}
