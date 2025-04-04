@@ -1,0 +1,129 @@
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.x"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - id: install_dependencies
+        uses: nicburgt/install-app-deps-composite-action@15e0a58f104cfcd55904b4f0874e22b8d7a31bda
+      - name: Detect formatter
+        id: detect_formatter
+        run: |
+          if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
+            if poetry show | grep -q 'ruff'; then
+              echo "ruff found as formatter"
+              echo "{formatter}={ruff}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No formatter found, aborting"
+              exit 1
+            fi
+          elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
+            if grep -q 'ruff' requirements.txt; then
+              echo "ruff found as formatter"
+              echo "{formatter}={ruff}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No formatter found, aborting"
+              exit 1
+            fi
+          fi
+      - name: Run formatter (poetry)
+        if: steps.install_dependencies.outputs.install_method == 'poetry'
+        run: |
+          if [ "${{ steps.detect_linter.outputs.formatter }}" == "ruff" ]; then
+            mkdir format-logs
+            poetry run ruff format --diff > format-logs/ruff-lint.log
+          fi
+      - name: Run formatter (pip)
+        if: steps.install_dependencies.outputs.install_method == 'pip'
+        run: |
+          if [ "${{ steps.detect_linter.outputs.formatter }}" == "ruff" ]; then
+            python -m ruff format --diff > format-logs/ruff-lint.log
+          fi
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: 'format-logs'
+          artifactName: 'formatter log'
+        continueOnError: true
+        condition: Failed()
+      - name: Detect linting framework
+        id: detect_linter
+        run: |
+          if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
+            if poetry show | grep -q 'ruff'; then
+              echo "ruff found as linter"
+              echo "{linter}={ruff}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No linter found, aborting"
+              exit 1
+            fi
+          elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
+            if grep -q 'ruff' requirements.txt; then
+              echo "ruff found as linter"
+              echo "{linter}={ruff}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No linter found, aborting"
+              exit 1
+            fi
+          fi
+      - name: Run linter (poetry)
+        if: steps.install_dependencies.outputs.install_method == 'poetry'
+        run: |
+          mkdir linter-logs
+          if [ "${{ steps.detect_linter.outputs.linter }}" == "ruff" ]; then
+            poetry run ruff check --no-cache $(Build.SourcesDirectory)/src/ > linter-logs/ruff-lint.log
+          fi
+      - name: Run linter (pip)
+        if: steps.install_dependencies.outputs.install_method == 'pip'
+        run: |
+          mkdir linter-logs
+          if [ "${{ steps.detect_linter.outputs.linter }}" == "ruff" ]; then
+            python -m ruff check . --no-cache $(Build.SourcesDirectory)/src/ > linter-logs/ruff-lint.log
+          fi
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: 'linter-logs'
+          artifactName: 'linter log'
+        continueOnError: true
+        condition: Failed()
+      - name: Detect type checker
+        id: detect_type_checker
+        run: |
+          if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
+            if poetry show | grep -q 'mypy'; then
+              echo "mypy found as type checker"
+              echo "{typechecker}={mypy}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No type checker found, aborting"
+              exit 1
+            fi
+          elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
+            if grep -q 'ruff' requirements.txt; then
+              echo "mypy found as type checker"
+              echo "{typechecker}={mypy}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No type checker found, aborting"
+              exit 1
+            fi
+          fi
+      - name: Run type checker (poetry)
+        if: steps.install_dependencies.outputs.install_method == 'poetry'
+        run: |
+          if [ "${{ steps.detect_linter.outputs.typechecker }}" == "mypy" ]; then
+            poetry run mypy .
+          fi
+      - name: Run type checker (pip)
+        if: steps.install_dependencies.outputs.install_method == 'pip'
+        run: |
+          if [ "${{ steps.detect_linter.outputs.typechecker }}" == "mypy" ]; then
+            python -m mypy .
+          fi
