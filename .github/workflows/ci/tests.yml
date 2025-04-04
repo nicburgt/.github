@@ -21,10 +21,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
+      - id: install_dependencies
+        uses: nicburgt/install-app-deps-composite-action@15e0a58f104cfcd55904b4f0874e22b8d7a31bda
       - name: Detect test framework (pytest or another)
         id: detect_test_framework
         run: |
-          if [ "${{ steps.package_manager_detection.outputs.install_method }}" == "poetry" ]; then
+          if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
             # Check for pytest in poetry dependencies
             if poetry show | grep -q 'pytest'; then
               echo "pytest found as test framework"
@@ -32,7 +34,7 @@ jobs:
             else
               echo "No pytest found, skipping running of tests"
             fi
-          elif [ "${{ steps.package_manager_detection.outputs.install_method }}" == "pip" ]; then
+          elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
             # Check for pytest in requirements.txt
             if grep -q 'pytest' requirements.txt; then
               echo "pytest found as test framework"
@@ -41,22 +43,21 @@ jobs:
               echo "No pytest found, skipping running of tests"
             fi
           fi
-      - name: Run tests
-        if: steps.detect_test_framework.outputs.test_framework != ''
+      - name: Run Tests (poetry)
+        if: steps.install_dependencies.outputs.install_method == 'poetry'
         run: |
-          if [ "${{ steps.package_manager_detection.outputs.install_method }}" == "poetry" ]; then
-            if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pytest" ]; then
-                poetry run python -m pytest --cov . --cov-report xml
-            else
-                echo "Skipping running tests through poetry as test framework was not specified"
-            fi
-            poetry run pytest  # Or any test command you want with Poetry
-          elif [ "${{ steps.package_manager_detection.outputs.install_method }}" == "pip" ]; then
-            if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
-                python -m pytest --cov . --cov-report xml
-            else
-                echo "Skipping running tests through pip as test framework was not specified"
-            fi
+          if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
+            poetry run python -m pytest --cov . --cov-report xml
+          else
+            echo "Skipping running tests through poetry as test framework was not specified"
+          fi
+      - name: Run Tests (pip)
+        if: steps.install_dependencies.outputs.install_method == 'pip'
+        run: |
+          if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
+            python -m pytest --cov . --cov-report xml
+          else
+            echo "Skipping running tests through pip as test framework was not specified"
           fi
       - name: Upload test coverage xml as artifact
         uses: actions/upload-artifact@v4
