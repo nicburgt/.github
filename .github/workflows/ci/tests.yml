@@ -8,6 +8,10 @@ on:
       test-results-artifact-name:
         required: true
         type: string
+    secrets:
+      codecov_token:
+        required: false
+        type: string
 
 jobs:
   tests:
@@ -42,15 +46,28 @@ jobs:
         run: |
           if [ "${{ steps.package_manager_detection.outputs.install_method }}" == "poetry" ]; then
             if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pytest" ]; then
-                poetry run pytest
+                poetry run python -m pytest --cov . --cov-report xml
             else
                 echo "Skipping running tests through poetry as test framework was not specified"
             fi
             poetry run pytest  # Or any test command you want with Poetry
           elif [ "${{ steps.package_manager_detection.outputs.install_method }}" == "pip" ]; then
             if [ "${{ steps.detect_test_framework.outputs.test_framework }}" == "pip" ]; then
-                pytest
+                python -m pytest --cov . --cov-report xml
             else
                 echo "Skipping running tests through pip as test framework was not specified"
             fi
           fi
+      - name: Upload test coverage xml as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.test-results-artifact-name }}
+          path: coverage.xml
+      - name: Upload coverage reports to Codecov (optionally)
+        if: $ {{ secrets.codecov_token != '' }}
+        run: |
+          # Replace `linux` below with the appropriate OS
+          # Options are `alpine`, `linux`, `macos`, `windows`
+          curl -Os https://cli.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.codecov_token }} -n 'service'-${{ github.run_id }} -f coverage.xml
