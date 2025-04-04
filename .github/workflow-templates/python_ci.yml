@@ -1,0 +1,18 @@
+name: Python Default CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  codeqa:
+    uses: nicburgt/.github/.github/workflows/ci/codeqa.yml@f7a0281e8c05d3d06daa80c5419666c6cc451937
+    with:
+      python-version: ${{ inputs.python-version }}
+  tests:
+    uses: nicburgt/.github/.github/workflows/ci/tests.yml@f7a0281e8c05d3d06daa80c5419666c6cc451937
+    with:
+      python-version: ${{ inputs.python-version }}
+      test-results-artifact-name: 'coverage-results'
