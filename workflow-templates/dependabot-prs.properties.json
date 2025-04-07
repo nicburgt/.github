@@ -1,0 +1,9 @@
+{
+    "name": "Dependabot dependency management template",
+    "description": "Dependabot workflow template which will auto approve PRs made by dependabot.",
+    "iconName": "dependabot",
+    "categories": [
+        "Dependency Management", "Dependabot"
+    ],
+    "filePatterns": []
+}
