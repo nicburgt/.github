@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - id: install_dependencies
-        uses: nicburgt/install-app-deps-composite-action@37f45e55427a8a21d025c2753f32c498c26bd193
+        uses: nicburgt/install-app-deps-composite-action@98eee550c542d1ba2a92f4aeec1b5f2d3fe66b57
       - name: Detect test framework (pytest or another)
         id: detect_test_framework
         run: |
