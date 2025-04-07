@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - id: install_dependencies
-        uses: nicburgt/install-app-deps-composite-action@15e0a58f104cfcd55904b4f0874e22b8d7a31bda
+        uses: nicburgt/install-app-deps-composite-action@37f45e55427a8a21d025c2753f32c498c26bd193
       - name: Detect formatter
         id: detect_formatter
         run: |
