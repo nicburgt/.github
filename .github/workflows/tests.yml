@@ -33,7 +33,7 @@ jobs:
             # Check for pytest in poetry dependencies
             if poetry show | grep -q 'pytest'; then
               echo "pytest found as test framework"
-              echo "{test_framework}={pytest}" >> "$GITHUB_OUTPUT"
+              echo "test_framework=pytest" >> $GITHUB_OUTPUT
             else
               echo "No pytest found, skipping running of tests"
             fi
@@ -41,7 +41,7 @@ jobs:
             # Check for pytest in requirements.txt
             if grep -q 'pytest' requirements.txt; then
               echo "pytest found as test framework"
-              echo "{test_framework}={pytest}" >> "$GITHUB_OUTPUT"
+              echo "test_framework=pytest" >> $GITHUB_OUTPUT
             else
               echo "No pytest found, skipping running of tests"
             fi

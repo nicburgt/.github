@@ -22,7 +22,7 @@ jobs:
           if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
             if poetry show | grep -q 'ruff'; then
               echo "ruff found as formatter"
-              echo "{formatter}={ruff}" >> "$GITHUB_OUTPUT"
+              echo "formatter=ruff" >> $GITHUB_OUTPUT
             else
               echo "No formatter found, aborting"
               exit 1
@@ -30,7 +30,7 @@ jobs:
           elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
             if grep -q 'ruff' requirements.txt; then
               echo "ruff found as formatter"
-              echo "{formatter}={ruff}" >> "$GITHUB_OUTPUT"
+              echo "formatter=ruff" >> $GITHUB_OUTPUT
             else
               echo "No formatter found, aborting"
               exit 1
@@ -61,7 +61,7 @@ jobs:
           if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
             if poetry show | grep -q 'ruff'; then
               echo "ruff found as linter"
-              echo "{linter}={ruff}" >> "$GITHUB_OUTPUT"
+              echo "linter=ruff" >> $GITHUB_OUTPUT
             else
               echo "No linter found, aborting"
               exit 1
@@ -69,7 +69,7 @@ jobs:
           elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
             if grep -q 'ruff' requirements.txt; then
               echo "ruff found as linter"
-              echo "{linter}={ruff}" >> "$GITHUB_OUTPUT"
+              echo "linter=ruff" >> $GITHUB_OUTPUT
             else
               echo "No linter found, aborting"
               exit 1
@@ -101,7 +101,7 @@ jobs:
           if [ "${{ steps.install_dependencies.outputs.install_method }}" == "poetry" ]; then
             if poetry show | grep -q 'mypy'; then
               echo "mypy found as type checker"
-              echo "{typechecker}={mypy}" >> "$GITHUB_OUTPUT"
+              echo "typechecker=mypy" >> $GITHUB_OUTPUT
             else
               echo "No type checker found, aborting"
               exit 1
@@ -109,7 +109,7 @@ jobs:
           elif [ "${{ steps.install_dependencies.outputs.install_method }}" == "pip" ]; then
             if grep -q 'ruff' requirements.txt; then
               echo "mypy found as type checker"
-              echo "{typechecker}={mypy}" >> "$GITHUB_OUTPUT"
+              echo "typechecker=mypy" >> $GITHUB_OUTPUT
             else
               echo "No type checker found, aborting"
               exit 1
