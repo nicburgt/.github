@@ -89,7 +89,7 @@ jobs:
           if [ "${{ steps.detect_linter.outputs.linter }}" == "ruff" ]; then
             python -m ruff check . --no-cache . > linter-logs/ruff-lint.log
           fi
-      - name: Upload formatter logs
+      - name: Upload linter logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
