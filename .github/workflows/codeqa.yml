@@ -80,14 +80,14 @@ jobs:
         run: |
           mkdir linter-logs
           if [ "${{ steps.detect_linter.outputs.linter }}" == "ruff" ]; then
-            poetry run ruff check --no-cache $(Build.SourcesDirectory)/src/ > linter-logs/ruff-lint.log
+            poetry run ruff check --no-cache . > linter-logs/ruff-lint.log
           fi
       - name: Run linter (pip)
         if: steps.install_dependencies.outputs.install_method == 'pip'
         run: |
           mkdir linter-logs
           if [ "${{ steps.detect_linter.outputs.linter }}" == "ruff" ]; then
-            python -m ruff check . --no-cache $(Build.SourcesDirectory)/src/ > linter-logs/ruff-lint.log
+            python -m ruff check . --no-cache . > linter-logs/ruff-lint.log
           fi
       - name: Upload formatter logs
         if: failure()
