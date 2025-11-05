@@ -1,0 +1,60 @@
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.x"
+      release-tag-name:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - id: install_dependencies
+        uses: nicburgt/install-app-deps-composite-action@98eee550c542d1ba2a92f4aeec1b5f2d3fe66b57
+      - name: Build release distributions
+        run: |
+          pipx install poetry
+          poetry version ${{ inputs.release-tag-name }}
+          poetry build
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-deploy-release-dists
+          path: dist/
+
+  pypi-publish:
+    runs-on: ubuntu-latest
+    needs:
+      - release-build
+    permissions:
+      # This permission is mandatory for trusted publishing
+      id-token: write
+    environment:
+      name: pypi
+      # A github environment named pypi MUST be defined in your github repository settings.
+      # Ideally, protection rules are configured as neede on this environment.
+      # For example, only allowing the main branch to access the environment.
+    steps:
+      - name: Retrieve release distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: pypi-deploy-release-dists
+          path: dist/
+
+      # Trusted publishing requires the Elaad PyPI administrator (Ton Smets / Nick van der Burgt)
+      # to preconfigure your repository to be allowed access to the PyPI Elaad organization.
+      - name: Publish release distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
