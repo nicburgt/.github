@@ -20,6 +20,6 @@ jobs:
       - run: echo "exposing environment variables as outputs"
   deploytopypi:
     needs: envvars
-    uses: nicburgt/.github/.github/workflows/deploy-to-pypi-poetry.yml@a45e6aa6c59be05e93aa642f2e846375af70fee9
+    uses: nicburgt/.github/.github/workflows/deploy-to-pypi-poetry.yml@e754b9cf3da5a7b5ff3fe0b69d1d3048c43d0523
     with:
       python-version: ${{ needs.envvars.outputs.python_version }}
