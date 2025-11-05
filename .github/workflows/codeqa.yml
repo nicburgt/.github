@@ -39,14 +39,14 @@ jobs:
       - name: Run formatter (poetry)
         if: steps.install_dependencies.outputs.install_method == 'poetry'
         run: |
-          if [ "${{ steps.detect_linter.outputs.formatter }}" == "ruff" ]; then
+          if [ "${{ steps.detect_formatter.outputs.formatter }}" == "ruff" ]; then
             mkdir format-logs
             poetry run ruff format --diff > format-logs/ruff-lint.log
           fi
       - name: Run formatter (pip)
         if: steps.install_dependencies.outputs.install_method == 'pip'
         run: |
-          if [ "${{ steps.detect_linter.outputs.formatter }}" == "ruff" ]; then
+          if [ "${{ steps.detect_formatter.outputs.formatter }}" == "ruff" ]; then
             python -m ruff format --diff > format-logs/ruff-lint.log
           fi
       - name: Upload formatter logs
