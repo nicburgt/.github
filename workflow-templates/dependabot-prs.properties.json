@@ -1,6 +1,6 @@
 {
     "name": "Dependabot dependency management template",
-    "description": "Dependabot workflow template which will auto approve PRs made by dependabot.",
+    "description": "Dependabot workflow template which will auto approve PRs made by dependabot. Requires the repository to have `Allow GitHub Actions to create and approve pull requests` enabled",
     "iconName": "dependabot",
     "categories": [
         "Dependency Management", "Dependabot"
