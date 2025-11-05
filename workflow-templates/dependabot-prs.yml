@@ -3,6 +3,7 @@ name: Dependabot Pull Request (auto approve)
 on: pull_request
 permissions:
   pull-requests: write
+  contents: write
 jobs:
   dependabot:
     runs-on: ubuntu-latest
@@ -22,4 +23,28 @@ jobs:
       env:
         PR_URL: ${{github.event.pull_request.html_url}}
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Merge the PR if approved PR
+      run: |
+        # Only merge if the PR is mergeable
+        MERGEABLE=$(gh pr view "$PR_URL" --json mergeable -q .mergeable)
+        if [ "$MERGEABLE" == "MERGEABLE" ]; then
+          gh pr merge "$PR_URL" --merge
+        else
+          echo "PR is not mergeable, skipping merge."
+        fi
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Merge the PR if approved PR
+      run: |
+        # Only merge if the PR is mergeable
+        MERGEABLE=$(gh pr view "$PR_URL" --json mergeable -q .mergeable)
+        if [ "$MERGEABLE" == "MERGEABLE" ]; then
+          gh pr merge "$PR_URL" --merge
+        else
+          echo "PR is not mergeable, skipping merge."
+        fi
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
