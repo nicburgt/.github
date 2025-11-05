@@ -52,8 +52,8 @@ jobs:
           name: pypi-deploy-release-dists
           path: dist/
 
-      # Trusted publishing requires the Elaad PyPI administrator (Ton Smets / Nick van der Burgt)
-      # to preconfigure your repository to be allowed access to the PyPI Elaad organization.
+      # Trusted publishing requires the PyPI administrator
+      # to preconfigure your repository to be allowed access to the PyPI organization.
       - name: Publish release distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
