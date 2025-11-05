@@ -1,0 +1,9 @@
+{
+    "name": "Deploy python package to PyPI",
+    "description": "workflow template which will deploy your package to the elaad PyPI environment using PyPI trusted publishing.",
+    "iconName": "pypi",
+    "categories": [
+        "PyPI", "Deployment", "Package", "Package Manager"
+    ],
+    "filePatterns": []
+}

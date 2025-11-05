@@ -1,0 +1,25 @@
+name: Deploy python package to PyPI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+env:
+  python_version: 3.13
+
+jobs:
+  # Silly workaround due to env limitations with reusable workflows.
+  # See: https://github.com/orgs/community/discussions/26671
+  envvars:
+    runs-on: ubuntu-22.04
+    outputs:
+      python_version: ${{ env.python_version }}
+    steps:
+      - run: echo "exposing environment variables as outputs"
+  deploytopypi:
+    needs: envvars
+    uses: nicburgt/.github/.github/workflows/deploy-to-pypi-poetry.yml@a45e6aa6c59be05e93aa642f2e846375af70fee9
+    with:
+      python-version: ${{ needs.envvars.outputs.python_version }}
