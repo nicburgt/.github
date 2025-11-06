@@ -1,0 +1,31 @@
+name: Terraform Default CD
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+# Special permissions required for OIDC authentication of terraform.
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+env:
+  working_directory: ./terraform
+
+jobs:
+  # Silly workaround due to env limitations with reusable workflows.
+  # See: https://github.com/orgs/community/discussions/26671
+  envvars:
+    runs-on: ubuntu-22.04
+    outputs:
+      working_directory: ${{ env.working_directory }}
+    steps:
+      - run: echo "exposing environment variables as outputs"
+  terraform-unit-tests:
+    needs: envvars
+    uses: nicburgt/.github/.github/workflows/terraform-cd.yml@d42edbafb9ae68a80303f16ffd08d69fcfab278a
+    with:
+      working-directory: ${{ needs.envvars.outputs.working_directory }}

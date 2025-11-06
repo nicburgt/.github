@@ -1,0 +1,26 @@
+name: Terraform Default CI
+
+on:
+  push:
+
+permissions:
+  contents: read # Needed to clone repo
+  actions: read # Potentially needed for private repositories (see https://github.com/github/codeql-action/issues/2117)
+
+env:
+  working_directory: ./terraform
+
+jobs:
+  # Silly workaround due to env limitations with reusable workflows.
+  # See: https://github.com/orgs/community/discussions/26671
+  envvars:
+    runs-on: ubuntu-22.04
+    outputs:
+      working_directory: ${{ env.working_directory }}
+    steps:
+      - run: echo "exposing environment variables as outputs"
+  terraform-unit-tests:
+    needs: envvars
+    uses: nicburgt/.github/.github/workflows/terraform-unit-tests.yml@d42edbafb9ae68a80303f16ffd08d69fcfab278a
+    with:
+      working-directory: ${{ needs.envvars.outputs.working_directory }}

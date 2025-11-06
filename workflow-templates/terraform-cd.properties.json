@@ -1,0 +1,8 @@
+{
+    "name": "Terraform CD template",
+    "description": "workflow template which will apply terraform to the chosen external environment",
+    "categories": [
+        "Infrastrucutre as Code", "Terraform", "IaC"
+    ],
+    "filePatterns": []
+}

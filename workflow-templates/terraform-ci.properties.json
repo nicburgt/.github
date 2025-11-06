@@ -1,0 +1,8 @@
+{
+    "name": "Terraform CI template",
+    "description": "workflow template which will lint, format and validate terraform files in the repository.",
+    "categories": [
+        "Infrastrucutre as Code", "Terraform", "IaC"
+    ],
+    "filePatterns": []
+}
